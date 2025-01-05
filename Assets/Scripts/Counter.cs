@@ -1,22 +1,22 @@
+using System;
 using System.Collections;
-using TMPro;
 using UnityEngine;
 
 public class Counter : MonoBehaviour
 {
-    [SerializeField] private TextMeshProUGUI _text;
     private Coroutine _counterCoroutine;
-    private int counter = 0;
+    private float _counter = 0f;
+    private float _delay = 0.5f;
+
+    public event Action<float> Changed;
 
     private void Update()
     {
-        float delay = 0.5f;
-
         if (Input.GetMouseButtonDown(0))
         {
             if (_counterCoroutine == null)
             {
-                _counterCoroutine = StartCoroutine(IncreaseCounter(delay));
+                _counterCoroutine = StartCoroutine(IncreaseCounter(_delay));
             }
             else
             {
@@ -30,15 +30,11 @@ public class Counter : MonoBehaviour
     {
         var wait = new WaitForSeconds(delay);
 
-        while (true)
+        while (enabled)
         {
-            DisplayCounter(counter++);
+            _counter++;
+            Changed?.Invoke(_counter);
             yield return wait;
         }
-    }
-
-    private void DisplayCounter(int count)
-    {
-        _text.text = count.ToString("");
     }
 }
